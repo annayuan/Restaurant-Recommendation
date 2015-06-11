@@ -19,7 +19,7 @@ import db.DBConnection;
 /**
  * Servlet implementation class GetRestaurantsNearby
  */
-@WebServlet("/Restaurants")
+@WebServlet("/GetRestaurantsNearby")
 public class GetRestaurantsNearby extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,8 @@ public class GetRestaurantsNearby extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.setContentType("application/json"); // what if I change it to txt
+		response.setContentType("application/json"); // what if I change it to
+														// txt
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		JSONObject output = new JSONObject();
 		if (request.getParameter("username") != null) {
@@ -79,7 +80,8 @@ public class GetRestaurantsNearby extends HttpServlet {
 			if (input.has("lat") && input.has("lon")) {
 				double lat = (Double) input.get("lat");
 				double lon = (Double) input.get("lon");
-				array = connection.GetRestaurantsNearLoation(lat, lon);
+				array = connection
+						.GetRestaurantsNearLoationViaYelpAPI(lat, lon);
 			}
 			response.setContentType("application/json");
 			response.addHeader("Access-Control-Allow-Origin", "*");

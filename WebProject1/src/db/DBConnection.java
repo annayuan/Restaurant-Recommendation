@@ -5,13 +5,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import yelp.Restaurant;
+import yelp.YelpAPI;
 
 public class DBConnection {
 
@@ -137,7 +139,7 @@ public class DBConnection {
 		try {
 			Statement stmt = conn.createStatement();
 			String sql = "SELECT categories from RESTAURANTS WHERE business_id='"
-	   				 + business_id + "'";
+					+ business_id + "'";
 			ResultSet rs = stmt.executeQuery(sql);
 			if (rs.next()) {
 				String categories = rs.getString("categories");
@@ -151,7 +153,7 @@ public class DBConnection {
 		}
 		return set;
 	}
-	
+
 	private Set<String> getBusinessId(String category) {
 		Set<String> set = new HashSet<String>();
 		try {
@@ -199,4 +201,56 @@ public class DBConnection {
 		}
 		return null;
 	}
+
+	public JSONArray GetRestaurantsNearLoationViaYelpAPI(double lat, double lon) {
+		try {
+			YelpAPI api = new YelpAPI();
+			JSONObject response = new JSONObject(
+					api.searchForBusinessesByLocation(lat, lon));
+			JSONArray array = (JSONArray) response.get("businesses");
+			if (conn == null) {
+				return null;
+			}
+			Statement stmt = conn.createStatement();
+			String sql = "";
+			List<JSONObject> list = new ArrayList<JSONObject>();
+
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject object = array.getJSONObject(i);
+				Restaurant restaurant = new Restaurant(object);
+				String business_id = restaurant.getBusinessId();
+				String name = restaurant.getName();
+				String categories = restaurant.getCategories();
+				String city = restaurant.getCity();
+				String state = restaurant.getState();
+				String fullAddress = restaurant.getFullAddress();
+				double stars = restaurant.getStars();
+				double latitude = restaurant.getLatitude();
+				double longitude = restaurant.getLongitude();
+				JSONObject obj = new JSONObject();
+				obj.append("business_id", business_id);
+				obj.append("name", name);
+				obj.append("stars", stars);
+				obj.append("latitude", latitude);
+				obj.append("longitude", longitude);
+				obj.append("full_address", fullAddress);
+				obj.append("city", city);
+				obj.append("state", state);
+				obj.append("categories", categories);
+				sql = "INSERT IGNORE INTO RESTAURANTS " + "VALUES ('"
+						+ business_id + "', \"" + name + "\", \"" + categories
+						+ "\", '" + city + "', '" + state + "', " + stars
+						+ ", \"" + fullAddress + "\", " + latitude + ","
+						+ longitude + ")";
+				System.out.println(sql);
+				stmt.executeUpdate(sql);
+				list.add(obj);
+			}
+			return new JSONArray(list);
+		} catch (Exception e) { /* report an error */
+			System.out.println(e.getMessage());
+		}
+		return null;
+	}
+
 }
