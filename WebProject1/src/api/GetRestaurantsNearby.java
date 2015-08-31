@@ -37,7 +37,6 @@ public class GetRestaurantsNearby extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		System.out.println("hello world");
 		response.setContentType("application/json"); // what if I change it to
 														// txt
 		response.addHeader("Access-Control-Allow-Origin", "*");
@@ -50,12 +49,10 @@ public class GetRestaurantsNearby extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("hello world");
 		PrintWriter out = response.getWriter();
 		out.print(output);
 		out.flush();
 		out.close();
-		System.out.println("hello world");
 	}
 
 	/**
@@ -66,7 +63,7 @@ public class GetRestaurantsNearby extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("hello world");
+		System.out.println("123");
 		StringBuffer jb = new StringBuffer();
 		String line = null;
 		try {
@@ -77,7 +74,6 @@ public class GetRestaurantsNearby extends HttpServlet {
 			reader.close();
 		} catch (Exception e) { /* report an error */
 		}
-
 		try {
 			JSONObject input = new JSONObject(jb.toString());
 			JSONArray array = null;
@@ -96,7 +92,6 @@ public class GetRestaurantsNearby extends HttpServlet {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		System.out.println("hello world");
 	}
 
 }
